@@ -9,9 +9,6 @@ on:
 permissions:
   contents: write
 
-env:
-  MYSTREAM_PLUGIN_SDK_REPOSITORY: joaoribeirovj89/MyStreamPluginSDK
-
 jobs:
   release:
     runs-on: macos-latest
@@ -20,35 +17,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: plugin
-
-      - name: Read SDK version
-        id: sdk
-        run: |
-          SDK_VERSION="$(cat plugin/.sdk-version)"
-          echo "version=$SDK_VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Validate SDK repository token
-        env:
-          SDK_TOKEN: ${{ secrets.MYSTREAM_PLUGIN_SDK_REPO_TOKEN }}
-        run: |
-          if [ -z "$SDK_TOKEN" ]; then
-            echo "::error title=Missing SDK token::Create repository secret MYSTREAM_PLUGIN_SDK_REPO_TOKEN with read-only Contents access to $MYSTREAM_PLUGIN_SDK_REPOSITORY."
-            exit 1
-          fi
-
-      - name: Checkout SDK
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ env.MYSTREAM_PLUGIN_SDK_REPOSITORY }}
-          ref: v${{ steps.sdk.outputs.version }}
-          path: MyStreamPluginSDK
+          submodules: recursive
           token: ${{ secrets.MYSTREAM_PLUGIN_SDK_REPO_TOKEN }}
 
       - name: Build package
         run: |
           python3 plugin/tools/package_plugin.py \
             --repo-root "$GITHUB_WORKSPACE/plugin" \
-            --sdk-dir "$GITHUB_WORKSPACE/MyStreamPluginSDK" \
+            --sdk-dir "$GITHUB_WORKSPACE/plugin/sdk" \
             --build-dir "$RUNNER_TEMP/mystream-plugin-build" \
             --output-dir "$RUNNER_TEMP/mystream-plugin-dist" \
             --clean

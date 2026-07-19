@@ -11,17 +11,23 @@ set(MYSTREAM_PLUGIN_VERSION "0.1.0" CACHE STRING "Plugin version")
 set(MYSTREAM_PLUGIN_CATEGORY "Panel" CACHE STRING "Plugin category")
 set(MYSTREAM_PLUGIN_TARGET "mystream_system_info_panel" CACHE STRING "Plugin target/output name")
 set(MYSTREAM_PLUGIN_API_VERSION "20" CACHE STRING "MyStream plugin API version")
-set(MYSTREAM_PLUGIN_SDK_VERSION "0.1.13" CACHE STRING "SDK version used to build this plugin")
+set(MYSTREAM_PLUGIN_SDK_VERSION "0.1.24" CACHE STRING "SDK version used to build this plugin")
 set(MYSTREAM_PLUGIN_SDK_MIN_VERSION "0.1.13" CACHE STRING "Minimum compatible MyStream SDK version")
 set(MYSTREAM_PLUGIN_SDK_MAX_VERSION "0.2.0" CACHE STRING "Exclusive maximum compatible MyStream SDK version")
-set(MYSTREAM_PLUGIN_SDK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../MyStreamPluginSDK" CACHE PATH "Path to MyStreamPluginSDK")
+set(MYSTREAM_PLUGIN_SDK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sdk" CACHE PATH "Path to MyStreamPluginSDK")
 
 if(NOT EXISTS "${MYSTREAM_PLUGIN_SDK_DIR}/include/mystream/plugin_sdk.hpp")
     message(FATAL_ERROR "MyStreamPluginSDK not found. Set MYSTREAM_PLUGIN_SDK_DIR to its repository root.")
 endif()
 
+add_subdirectory(
+    "${MYSTREAM_PLUGIN_SDK_DIR}"
+    "${CMAKE_BINARY_DIR}/mystream-plugin-sdk")
+
 add_library(${MYSTREAM_PLUGIN_TARGET} SHARED src/panel_plugin.cpp)
 target_include_directories(${MYSTREAM_PLUGIN_TARGET} PRIVATE "${MYSTREAM_PLUGIN_SDK_DIR}/include")
+
+target_link_libraries(${MYSTREAM_PLUGIN_TARGET} PRIVATE MyStream::PluginSDK)
 
 set(MYSTREAM_PLUGIN_PACKAGE_DIR "${CMAKE_BINARY_DIR}/${MYSTREAM_PLUGIN_TARGET}")
 set_target_properties(${MYSTREAM_PLUGIN_TARGET} PROPERTIES
