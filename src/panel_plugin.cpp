@@ -105,8 +105,8 @@ void RenderPanel(
 }
 }
 
-extern "C" bool mystream_register_plugin_v12(mystream::plugin::PluginApiV12* api) {
-    if (!api || api->apiVersion != mystream::plugin::kPluginApiVersionV12 || !api->register_panel) {
+extern "C" bool mystream_register_plugin(mystream::plugin::PluginApi* api) {
+    if (!api || api->apiVersion < mystream::plugin::kCurrentPluginApiVersion || !api->register_panel) {
         return false;
     }
     mystream::plugin::PluginPanelDefinition definition{};
