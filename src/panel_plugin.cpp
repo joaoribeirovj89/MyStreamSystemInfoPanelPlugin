@@ -57,7 +57,7 @@ void RenderPanel(
     void*,
     const mystream::plugin::PluginUiApi* ui,
     const mystream::plugin::PluginPanelHostApi* host) {
-    if (!ui || ui->apiVersion < mystream::plugin::kPluginApiVersionV12) {
+    if (!ui || ui->apiVersion < mystream::plugin::kCurrentPluginApiVersion) {
         return;
     }
 
